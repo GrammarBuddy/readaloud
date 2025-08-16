@@ -129,17 +129,17 @@
 
     <script>
         // === Data ===
-        // Since we can't load a separate file, the JSON data is hardcoded here.
+        // The passages from passages.json are now included directly here.
         const passages = {
-            easy: [
+            "easy": [
                 "The cat sat on the mat. It was a sunny day. The cat's name was Fluffy. Fluffy liked to play with a red ball. A small bird sang in a tree outside the window. Fluffy watched the bird with big, green eyes.",
                 "I like to eat apples. Apples are red and green. My friend also likes apples. We eat them in the park. The park has a big tree. We sit under the tree and talk."
             ],
-            medium: [
+            "medium": [
                 "The old house stood on a hill overlooking the quiet town. Its windows, like dark eyes, stared out at the world. Ivy climbed the stone walls, clinging to the bricks with a strong, green grip. People said the house was haunted, but a young artist named Maya saw only its beauty. She believed it was a place filled with stories waiting to be told.",
                 "Beneath the ocean's surface, a world of vibrant color and strange shapes thrived. Schools of fish moved together like a single, silver ribbon. A lone turtle, ancient and slow, drifted past coral reefs that looked like painted forests. The sun's light filtered down, creating shimmering patterns on the sandy bottom, illuminating the silent, peaceful world below."
             ],
-            hard: [
+            "hard": [
                 "The industrial revolution, a period of profound technological and social change, irrevocably altered the trajectory of human civilization. It was characterized by the transition from agrarian and handcraft-based economies to those dominated by machinery and factory systems. This transformation, while catalyzing unprecedented economic growth and innovation, also engendered complex socio-economic challenges, including urban overpopulation, labor exploitation, and significant environmental degradation. Historians continue to debate the long-term consequences of this monumental epoch, examining its dual legacy of progress and disparity.",
                 "In the realm of quantum mechanics, the principle of superposition dictates that a particle, such as an electron, can exist in all of its possible states simultaneously until it is measured. This counterintuitive concept, a cornerstone of quantum theory, challenges classical notions of reality. The act of observation is what forces the particle to 'collapse' into a single, definite state. This phenomenon, famously illustrated by the thought experiment of Schrödinger's cat, highlights the bizarre and probabilistic nature of the subatomic world, a realm governed by rules that defy our macroscopic intuition."
             ]
@@ -193,7 +193,7 @@
         // Start button logic
         startBtn.addEventListener('click', () => {
             if (!currentDifficulty) {
-                alert("Please select a difficulty level first!");
+                statusText.textContent = 'Please select a difficulty level first!';
                 return;
             }
             startCountdown();
