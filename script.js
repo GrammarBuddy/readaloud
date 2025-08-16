@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordCount = currentPassage.split(' ').length;
         readingText.textContent = currentPassage;
         readingText.style.display = 'block';
-        resetApp(); // Reset the UI to its initial state
+        // Removed the problematic resetApp() call from here
         setSpeed(speedSlider.value); // Set the speed for the new passage
         
         // Highlight the selected difficulty button
@@ -178,7 +178,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to reset the app
     function resetApp() {
-        // Simply reload the page to reset all state
-        window.location.reload();
+        if (animation) {
+            animation.cancel();
+            animation = null;
+        }
+        clearInterval(intervalId);
+        isPaused = false;
+        countdownElement.classList.add('hidden');
+        
+        readingText.style.transform = 'translateY(0)';
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0%';
+        
+        currentPassage = "";
+        readingText.textContent = "Select a difficulty to begin!";
+        
+        document.querySelectorAll('.button-group button').forEach(btn => {
+            btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600', 'ring-4', 'ring-emerald-300');
+            btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
+        });
+
+        startBtn.style.display = 'block';
+        pauseBtn.style.display = 'none';
+        resumeBtn.style.display = 'none';
     }
 });
