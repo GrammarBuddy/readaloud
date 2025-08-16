@@ -190,6 +190,16 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.transition = 'none';
         progressBar.style.width = '0%';
         
+        // ** NEW CODE STARTS HERE **
+        currentPassage = ""; // Clear the current passage
+        readingText.textContent = "Select a difficulty to begin!"; // Reset the text content
+        
+        // Deselect all difficulty buttons
+        document.querySelectorAll('.button-group button').forEach(btn => {
+            btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600');
+            btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
+        });
+
         // Hide pause/resume buttons and show start button
         startBtn.style.display = 'block';
         pauseBtn.style.display = 'none';
