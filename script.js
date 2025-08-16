@@ -2,6 +2,7 @@ let passages = {};
 let currentDifficulty = null;
 let scrollInterval;
 let countdownTimer;
+let scrollDuration = 20; // default duration in seconds
 
 async function loadPassages() {
     try {
@@ -14,11 +15,10 @@ async function loadPassages() {
 
 function setDifficulty(level) {
     currentDifficulty = level;
-    const passage = passages[level];
     const readingText = document.getElementById('readingText');
 
-    if (passage) {
-        readingText.textContent = passage;
+    if (level) {
+        readingText.textContent = `${level.charAt(0).toUpperCase() + level.slice(1)} selected`;
         readingText.classList.remove('placeholder');
     }
 }
@@ -42,19 +42,21 @@ function startReading() {
         } else {
             clearInterval(countdownTimer);
             countdownEl.style.display = 'none';
-            scrollPassage();
+            showAndScrollPassage();
         }
     }, 1000);
 }
 
-function scrollPassage() {
+function showAndScrollPassage() {
     const container = document.querySelector('.scroll-container');
     const text = document.getElementById('readingText');
 
+    // Get the actual passage
+    const passage = passages[currentDifficulty];
+    text.textContent = passage;
+
     // Reset any previous scroll
     clearInterval(scrollInterval);
-
-    // Reset styles
     text.style.transition = 'none';
     text.style.transform = 'translateY(0)';
 
@@ -65,15 +67,19 @@ function scrollPassage() {
     const containerHeight = container.offsetHeight;
     const textHeight = text.scrollHeight;
 
-    // Start from bottom (passage fully below container)
+    // Start from bottom
     const startY = containerHeight;
     const endY = -textHeight;
 
     text.style.transform = `translateY(${startY}px)`;
 
+    // Get scroll speed from slider (seconds)
+    const speedSlider = document.getElementById('speedSlider');
+    scrollDuration = speedSlider ? parseInt(speedSlider.value, 10) : 20;
+
     // Animate
     setTimeout(() => {
-        text.style.transition = 'transform 20s linear';
+        text.style.transition = `transform ${scrollDuration}s linear`;
         text.style.transform = `translateY(${endY}px)`;
     }, 100);
 }
