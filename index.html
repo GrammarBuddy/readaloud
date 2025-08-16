@@ -6,19 +6,19 @@
   <title>📖 ReadRight</title>
   <style>
     :root{
-      --bg:#0f172a;          /* slate-900 */
+      --bg:#0f172a;       /* slate-900 */
       --panel:#111827;       /* gray-900 */
       --muted:#94a3b8;       /* slate-400 */
-      --text:#e5e7eb;        /* gray-200 */
+      --text:#e5e7eb;      /* gray-200 */
       --accent:#22c55e;      /* green-500 */
-      --accent-2:#3b82f6;    /* blue-500 */
+      --accent-2:#3b82f6;   /* blue-500 */
       --danger:#ef4444;      /* red-500 */
       --warning:#f59e0b;     /* amber-500 */
-      --btn:#1f2937;         /* gray-800 */
+      --btn:#1f2937;        /* gray-800 */
       --btn-hover:#374151;   /* gray-700 */
       --radius:16px;
     }
-    *{box-sizing:border-box}
+    * { box-sizing:border-box }
     body{
       margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
       background: linear-gradient(180deg, var(--bg), #0b1226 35%);
@@ -36,6 +36,25 @@
     h1{margin:0 0 14px; font-size: clamp(22px, 3.5vw, 32px); letter-spacing:0.3px}
     .sub{color:var(--muted); margin-bottom:18px}
 
+    /* Top links */
+    .top-nav {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 12px;
+    }
+    .top-nav a {
+      font-size: 14px;
+      color: var(--danger);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity .2s ease;
+    }
+    .top-nav a:hover {
+      opacity: 0.8;
+    }
+
     /* Top controls */
     .row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
     .levels{display:flex; gap:10px; flex-wrap:wrap}
@@ -52,7 +71,6 @@
     .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.18) }
     .btn-danger{ background:var(--danger) }
     .btn-warning{ background:var(--warning); color:#111 }
-
     .btn.level{ position:relative; overflow:hidden }
     .btn.level.active{ outline:2px solid var(--accent); box-shadow:0 0 0 4px rgba(34,197,94,0.15) }
 
@@ -71,7 +89,6 @@
     .scroller{ position:absolute; left:0; right:0; transform: translateY(0); will-change: transform; }
     .passage{ white-space:pre-wrap; line-height:1.7; font-size: clamp(15px, 1.3vw, 18px); letter-spacing:0.2px }
     .placeholder{ position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--muted); padding:16px }
-
     .controls{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px }
 
     .hidden{ display:none !important }
@@ -79,11 +96,15 @@
   </style>
 </head>
 <body>
+  <div class="top-nav">
+    <a href="https://grammarbuddy.github.io">Grammar Buddy</a>
+    <a href="https://sites.google.com/view/gbspellbee/home">Spelling Bee</a>
+    <a href="https://sites.google.com/view/titatov3/home">TaTiTo Code</a>
+    <a href="https://grammarbuddy.github.io/aboutus.html">About Us</a>
+  </div>
   <main class="app">
     <div class="card">
       <h1>📖 ReadRight</h1>
-      <p class="sub">Boost your English reading. Pick a level, adjust the speed, and let's begin!</p>
-
       <div class="row" style="justify-content:space-between">
         <div class="levels" role="group" aria-label="Choose difficulty">
           <button class="btn level active" data-level="easy">Easy</button>
@@ -97,7 +118,6 @@
           <span class="badge"><span id="wpmVal">200</span> </span>
         </div>
       </div>
-
       <div class="viewport" id="viewport" aria-live="polite" aria-atomic="true">
         <div class="placeholder" id="placeholder">
           <div>
@@ -109,7 +129,6 @@
           <div class="passage" id="passage"></div>
         </div>
       </div>
-
       <div class="controls" id="controls">
         <button id="startBtn" class="btn primary">Start</button>
         <div id="runControls" class="hidden">
@@ -117,20 +136,17 @@
           <button id="resetBtn" class="btn btn-outline">Reset</button>
         </div>
       </div>
-
       <div class="sub" style="margin-top:10px">Tip: You can change the speed while it is still scrolling — it adjusts instantly!</div>
     </div>
   </main>
-
   <script>
     // === Passages JSON ===
     // Expected structure in passages.json (same folder as index.html):
     // {
-    //   "easy":   ["para 1...", "para 2..."],
-    //   "medium": ["para ..."],
-    //   "hard":   ["para ..."]
+    //  "easy":   ["para 1...", "para 2..."],
+    //  "medium": ["para ..."],
+    //  "hard":   ["para ..."]
     // }
-
     const levels = document.querySelectorAll('.btn.level');
     const speedSlider = document.getElementById('speed');
     const wpmVal = document.getElementById('wpmVal');
@@ -138,16 +154,13 @@
     const pauseBtn = document.getElementById('pauseBtn');
     const resetBtn = document.getElementById('resetBtn');
     const runControls = document.getElementById('runControls');
-
     const viewport = document.getElementById('viewport');
     const scroller = document.getElementById('scroller');
     const passageEl = document.getElementById('passage');
     const placeholder = document.getElementById('placeholder');
-
     let passages = { easy:[], medium:[], hard:[] };
     let currentLevel = 'easy';
     let currentText = '';
-
     // Animation state
     let rafId = null;
     let running = false;
@@ -156,7 +169,6 @@
     let pxPerSec = 0;
     let scrollEndY = 0; // goal translateY
     let lastTs = 0;
-
     // Load passages.json
     fetch('passages.json')
       .then(r => {
@@ -175,10 +187,8 @@
       .catch(err => {
         placeholder.innerHTML = `<div><strong style="color:#fca5a5">Error:</strong> ${err.message}.<br/>Place a <code>passages.json</code> file next to this <code>index.html</code>.</div>`;
       });
-
     // UI Handlers
     levels.forEach(btn => btn.addEventListener('click', () => setLevel(btn.dataset.level)));
-
     speedSlider.addEventListener('input', () => {
       wpmVal.textContent = speedSlider.value;
       if(running && !paused){
@@ -190,7 +200,6 @@
         pxPerSec = distance / duration;
       }
     });
-
     startBtn.addEventListener('click', startCountdownThenScroll);
     pauseBtn.addEventListener('click', () => {
       if(!running) return;
@@ -204,66 +213,55 @@
       }
     });
     resetBtn.addEventListener('click', resetAll);
-
     function setLevel(level){
       if(running) return; // avoid switching mid-run; user can reset first
       currentLevel = level;
       levels.forEach(b => b.classList.toggle('active', b.dataset.level === level));
-
       // Choose a random passage from the level
       const pool = passages[level] || [];
       currentText = pool.length ? pool[Math.floor(Math.random()*pool.length)] : '(No passages found for this level.)';
-
       // Show info in placeholder; hide scroller content until Start
       passageEl.textContent = '';
       scroller.style.transform = 'translateY(0px)';
       placeholder.classList.remove('hidden');
       placeholder.innerHTML = `<div><div style="font-weight:700; font-size:18px; margin-bottom:6px">${capitalize(level)} selected</div><div>Press <strong>Start</strong> to begin the countdown.<br/>Speed is set to <strong>${speedSlider.value} WPM</strong>.</div></div>`;
     }
-
     async function startCountdownThenScroll(){
       if(running) return;
       if(!currentText) setLevel(currentLevel);
-
       // Replace Start button with running controls
       startBtn.classList.add('hidden');
       runControls.classList.remove('hidden');
-
       // Countdown overlay inside viewport
       placeholder.classList.remove('hidden');
       placeholder.innerHTML = countdownMarkup(3);
       await doCountdown(3);
-
       // Prepare text and start scrolling
       placeholder.classList.add('hidden');
       passageEl.textContent = currentText;
       prepareAndStartScroll();
     }
-
     function prepareAndStartScroll(){
+      // Re-enable the pause button
+      pauseBtn.disabled = false;
       // Position scroller just below the viewport
       const viewH = viewport.clientHeight;
       const contentH = scroller.offsetHeight; // passage already injected
-
       y = viewH; // start just below
       scroller.style.transform = `translateY(${y}px)`;
-
       const words = countWords(currentText);
       const wpm = Number(speedSlider.value);
       const duration = Math.max(0.5, (words / Math.max(1, wpm)) * 60); // in seconds
       const distance = viewH + contentH; // total travel
       pxPerSec = distance / duration;
       scrollEndY = -contentH;
-
       running = true; paused = false; lastTs = performance.now();
       rafId = requestAnimationFrame(tick);
     }
-
     function tick(ts){
       if(paused){ return; }
       const dt = (ts - lastTs) / 1000; // seconds
       lastTs = ts;
-
       y -= pxPerSec * dt; // move up
       if(y <= scrollEndY){
         y = scrollEndY;
@@ -274,36 +272,29 @@
       scroller.style.transform = `translateY(${y}px)`;
       rafId = requestAnimationFrame(tick);
     }
-
     function finish(){
-    running = false; paused = false;
-    pauseBtn.textContent = 'Pause';
-    // Disable the pause button
-    pauseBtn.disabled = true;
-    // Keep runControls visible; user can press Reset to start over
-}
-
-  function resetAll(){
-  cancelAnimationFrame(rafId);
-  running = false; paused = false; y = 0; pxPerSec = 0; lastTs = 0;
-  pauseBtn.textContent = 'Pause';
-  
-  // Re-enable the pause button
-  pauseBtn.disabled = false;
-  
-  runControls.classList.add('hidden');
-  startBtn.classList.remove('hidden');
-  
-  // Call setLevel() to select a new passage and update the UI
-  setLevel(currentLevel); 
-}
-
+      running = false; paused = false;
+      pauseBtn.textContent = 'Pause';
+      // Disable the pause button
+      pauseBtn.disabled = true;
+      // Keep runControls visible; user can press Reset to start over
+    }
+    function resetAll(){
+      cancelAnimationFrame(rafId);
+      running = false; paused = false; y = 0; pxPerSec = 0; lastTs = 0;
+      pauseBtn.textContent = 'Pause';
+      // Re-enable the pause button
+      pauseBtn.disabled = false;
+      runControls.classList.add('hidden');
+      startBtn.classList.remove('hidden');
+      // Call setLevel() to select a new passage and update the UI
+      setLevel(currentLevel);
+    }
     // Helpers
     function countWords(t){
       return (t.trim().match(/\b\w+\b/g) || []).length;
     }
     function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
     function countdownMarkup(n){
       return `
         <div style="display:grid; gap:8px; place-items:center">
@@ -312,7 +303,6 @@
         </div>
       `;
     }
-
     function doCountdown(n){
       return new Promise(resolve => {
         let i = n;
