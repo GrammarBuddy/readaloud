@@ -1,330 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📖 ReadRight</title>
-  <style>
-    :root{
-      --bg:#0f172a;       /* slate-900 */
-      --panel:#111827;       /* gray-900 */
-      --muted:#94a3b8;       /* slate-400 */
-      --text:#e5e7eb;      /* gray-200 */
-      --accent:#22c55e;      /* green-500 */
-      --accent-2:#3b82f6;   /* blue-500 */
-      --danger:#ef4444;      /* red-500 */
-      --warning:#f59e0b;     /* amber-500 */
-      --btn:#1f2937;        /* gray-800 */
-      --btn-hover:#374151;   /* gray-700 */
-      --radius:16px;
-    }
-    * { box-sizing:border-box }
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      background: linear-gradient(180deg, var(--bg), #0b1226 35%);
-      color:var(--text);
-      min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px;
-    }
-    .app{ width:min(900px, 96vw); }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:calc(var(--radius) + 4px);
-      box-shadow:0 10px 30px rgba(0,0,0,0.35);
-      padding:20px; backdrop-filter: blur(6px);
-    }
-    h1{margin:0 0 14px; font-size: clamp(22px, 3.5vw, 32px); letter-spacing:0.3px}
-    .sub{color:var(--muted); margin-bottom:18px}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📖 ReadRight</title>
+  <style>
+    :root{
+      --bg:#0f172a;       /* slate-900 */
+      --panel:#111827;       /* gray-900 */
+      --muted:#94a3b8;       /* slate-400 */
+      --text:#e5e7eb;      /* gray-200 */
+      --accent:#22c55e;      /* green-500 */
+      --accent-2:#3b82f6;   /* blue-500 */
+      --danger:#ef4444;      /* red-500 */
+      --warning:#f59e0b;     /* amber-500 */
+      --btn:#1f2937;        /* gray-800 */
+      --btn-hover:#374151;   /* gray-700 */
+      --radius:16px;
+    }
+    * { box-sizing:border-box }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, var(--bg), #0b1226 35%);
+      color:var(--text);
+      min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .app{ width:min(900px, 96vw); }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:calc(var(--radius) + 4px);
+      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+      padding:20px; backdrop-filter: blur(6px);
+    }
+    h1{margin:0 0 14px; font-size: clamp(22px, 3.5vw, 32px); letter-spacing:0.3px}
+    .sub{color:var(--muted); margin-bottom:18px}
 
-    /* Top links */
+    /* Top links */
 .top-nav {
-  position: absolute;
-  top: 10px;
-  /* Use left and transform to center horizontally */
-  left: 50%;
-  transform: translateX(-50%);
-  
-  display: flex;
-  justify-content: center; /* This centers the links within the flex container */
-  gap: 12px;
+  position: absolute;
+  top: 10px;
+  /* Use left and transform to center horizontally */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  display: flex;
+  justify-content: center; /* This centers the links within the flex container */
+  gap: 12px;
 }
-    .top-nav a {
-      font-size: 14px;
-      color: var(--danger);
-      text-decoration: none;
-      font-weight: 600;
-      transition: opacity .2s ease;
-    }
-    .top-nav a:hover {
-      opacity: 0.8;
-    }
+    .top-nav a {
+      font-size: 14px;
+      color: var(--danger);
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity .2s ease;
+    }
+    .top-nav a:hover {
+      opacity: 0.8;
+    }
 
-    /* Top controls */
-    .row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
-    .levels{display:flex; gap:10px; flex-wrap:wrap}
-    .btn{
-      cursor:pointer; user-select:none; border:none; color:var(--text);
-      background:var(--btn); padding:10px 16px; border-radius:999px; font-weight:600;
-      transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25) inset, 0 2px 8px rgba(0,0,0,0.25);
-    }
-    .btn:hover{ background:var(--btn-hover); transform: translateY(-1px)}
-    .btn:active{ transform: translateY(0)}
-    .btn.primary{ background:linear-gradient(90deg, var(--accent), var(--accent-2)); }
-    .btn.primary:hover{ filter:brightness(1.05) }
-    .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.18) }
-    .btn-danger{ background:var(--danger) }
-    .btn-warning{ background:var(--warning); color:#111 }
-    .btn.level{ position:relative; overflow:hidden }
-    .btn.level.active{ outline:2px solid var(--accent); box-shadow:0 0 0 4px rgba(34,197,94,0.15) }
+    /* Top controls */
+    .row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+    .levels{display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      cursor:pointer; user-select:none; border:none; color:var(--text);
+      background:var(--btn); padding:10px 16px; border-radius:999px; font-weight:600;
+      transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25) inset, 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .btn:hover{ background:var(--btn-hover); transform: translateY(-1px)}
+    .btn:active{ transform: translateY(0)}
+    .btn.primary{ background:linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    .btn.primary:hover{ filter:brightness(1.05) }
+    .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.18) }
+    .btn-danger{ background:var(--danger) }
+    .btn-warning{ background:var(--warning); color:#111 }
+    .btn.level{ position:relative; overflow:hidden }
+    .btn.level.active{ outline:2px solid var(--accent); box-shadow:0 0 0 4px rgba(34,197,94,0.15) }
 
-    /* Slider */
-    .slider-wrap{ display:flex; align-items:center; gap:12px; margin:6px 0 12px }
-    input[type="range"]{ width:70% }
-    .badge{ padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.1); color:var(--text); font-weight:700 }
+    /* Slider */
+    .slider-wrap{ display:flex; align-items:center; gap:12px; margin:6px 0 12px }
+    input[type="range"]{ width:70% }
+    .badge{ padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.1); color:var(--text); font-weight:700 }
 
-    /* Viewport (scroll box) */
-    .viewport{
-      position:relative; overflow:hidden; height:360px; border-radius:var(--radius);
-      background: linear-gradient(180deg, rgba(15,23,42,0.6), rgba(15,23,42,0.9));
-      border:1px solid rgba(255,255,255,0.12);
-      padding: 16px 18px; margin: 14px 0 12px;
-    }
-    .scroller{ position:absolute; left:0; right:0; transform: translateY(0); will-change: transform; }
-    .passage{ white-space:pre-wrap; line-height:1.7; font-size: clamp(15px, 1.3vw, 18px); letter-spacing:0.2px }
-    .placeholder{ position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--muted); padding:16px }
-    .controls{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px }
+    /* Viewport (scroll box) */
+    .viewport{
+      position:relative; overflow:hidden; height:360px; border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(15,23,42,0.6), rgba(15,23,42,0.9));
+      border:1px solid rgba(255,255,255,0.12);
+      padding: 16px 18px; margin: 14px 0 12px;
+    }
+    .scroller{ position:absolute; left:0; right:0; transform: translateY(0); will-change: transform; }
+    .passage{ white-space:pre-wrap; line-height:1.7; font-size: clamp(15px, 1.3vw, 18px); letter-spacing:0.2px }
+    .placeholder{ position:absolute; inset:0; display:grid; place-items:center; text-align:center; color:var(--muted); padding:16px }
+    .controls{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px }
 
-    .hidden{ display:none !important }
-    .sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
-  </style>
+    .hidden{ display:none !important }
+    .sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+  </style>
 </head>
 <body>
 
 <div class="top-nav">
-    <a href="https://grammarbuddy.github.io">Home</a>  |  
-    <a href="https://sites.google.com/view/gbspellbee/home">Spelling_Bee</a>  |  
-    <a href="https://sites.google.com/view/titatov3/home">TaTiTo_Code</a>
-  </div>
+    <a href="https://grammarbuddy.github.io">Home</a>  |  
+    <a href="https://sites.google.com/view/gbspellbee/home">Spelling_Bee</a>  |  
+    <a href="https://sites.google.com/view/titatov3/home">TaTiTo_Code</a>
+  </div>
 
-  
-  <main class="app">
-    <div class="card">
-      <h1>📖 ReadRight</h1>
-      <div class="row" style="justify-content:space-between">
-        <div class="levels" role="group" aria-label="Choose difficulty">
-          <button class="btn level active" data-level="easy">Easy</button>
-          <button class="btn level" data-level="medium">Medium</button>
-          <button class="btn level" data-level="hard">Hard</button>
-        </div>
-        <div class="slider-wrap" aria-live="polite">
-          <label for="speed" class="sr">Speed (WPM)</label>
-          <span>Speed:</span>
-          <input id="speed" type="range" min="50" max="300" value="200" step="10" />
-          <span class="badge"><span id="wpmVal">200</span> </span>
-        </div>
-      </div>
-      <div class="viewport" id="viewport" aria-live="polite" aria-atomic="true">
-        <div class="placeholder" id="placeholder">
-          <div>
-            <div style="font-weight:700; font-size:18px; margin-bottom:4px">Ready to practice?</div>
-            <div>Select a difficulty and press <em>Start</em>.</div>
-          </div>
-        </div>
-        <div class="scroller" id="scroller">
-          <div class="passage" id="passage"></div>
-        </div>
-      </div>
-      <div class="controls" id="controls">
-        <button id="startBtn" class="btn primary">Start</button>
-        <div id="runControls" class="hidden">
-          <button id="pauseBtn" class="btn btn-warning">Pause</button>
-          <button id="resetBtn" class="btn btn-outline">Reset</button>
-        </div>
-      </div>
-      <div class="sub" style="margin-top:10px">Tip: You can change the speed while it is still scrolling — it adjusts instantly!</div>
-    </div>
-  </main>
-  <script>
-    // === Passages JSON ===
-    // Expected structure in passages.json (same folder as index.html):
-    // {
-    //  "easy":   ["para 1...", "para 2..."],
-    //  "medium": ["para ..."],
-    //  "hard":   ["para ..."]
-    // }
-    const levels = document.querySelectorAll('.btn.level');
-    const speedSlider = document.getElementById('speed');
-    const wpmVal = document.getElementById('wpmVal');
-    const startBtn = document.getElementById('startBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const runControls = document.getElementById('runControls');
-    const viewport = document.getElementById('viewport');
-    const scroller = document.getElementById('scroller');
-    const passageEl = document.getElementById('passage');
-    const placeholder = document.getElementById('placeholder');
-    let passages = { easy:[], medium:[], hard:[] };
-    let currentLevel = 'easy';
-    let currentText = '';
-    // Animation state
-    let rafId = null;
-    let running = false;
-    let paused = false;
-    let y = 0; // current translateY px
-    let pxPerSec = 0;
-    let scrollEndY = 0; // goal translateY
-    let lastTs = 0;
-    // Load passages.json
-    fetch('passages.json')
-      .then(r => {
-        if(!r.ok) throw new Error('Could not load passages.json');
-        return r.json();
-      })
-      .then(json => {
-        // Normalize: accept objects with {text: "..."} too
-        const norm = arr => (arr||[]).map(x => typeof x === 'string' ? x : (x && (x.text||x.passage||x.content)) || '').filter(Boolean);
-        passages.easy = norm(json.easy);
-        passages.medium = norm(json.medium);
-        passages.hard = norm(json.hard);
-        // Preselect first available passage
-        setLevel('easy');
-      })
-      .catch(err => {
-        placeholder.innerHTML = `<div><strong style="color:#fca5a5">Error:</strong> ${err.message}.<br/>Place a <code>passages.json</code> file next to this <code>index.html</code>.</div>`;
-      });
-    // UI Handlers
-    levels.forEach(btn => btn.addEventListener('click', () => setLevel(btn.dataset.level)));
-    speedSlider.addEventListener('input', () => {
-      wpmVal.textContent = speedSlider.value;
-      if(running && !paused){
-        // Recompute speed based on new WPM
-        const wpm = Number(speedSlider.value);
-        const words = countWords(currentText);
-        const duration = Math.max(0.5, (words / Math.max(1, wpm)) * 60); // seconds
-        const distance = (viewport.clientHeight + scroller.offsetHeight);
-        pxPerSec = distance / duration;
-      }
-    });
-    startBtn.addEventListener('click', startCountdownThenScroll);
-    pauseBtn.addEventListener('click', () => {
-      if(!running) return;
-      paused = !paused;
-      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-      if(!paused){
-        lastTs = performance.now();
-        rafId = requestAnimationFrame(tick);
-      } else {
-        cancelAnimationFrame(rafId);
-      }
-    });
-    resetBtn.addEventListener('click', resetAll);
-    function setLevel(level){
-      if(running) return; // avoid switching mid-run; user can reset first
-      currentLevel = level;
-      levels.forEach(b => b.classList.toggle('active', b.dataset.level === level));
-      // Choose a random passage from the level
-      const pool = passages[level] || [];
-      currentText = pool.length ? pool[Math.floor(Math.random()*pool.length)] : '(No passages found for this level.)';
-      // Show info in placeholder; hide scroller content until Start
-      passageEl.textContent = '';
-      scroller.style.transform = 'translateY(0px)';
-      placeholder.classList.remove('hidden');
-      placeholder.innerHTML = `<div><div style="font-weight:700; font-size:18px; margin-bottom:6px">${capitalize(level)} selected</div><div>Press <strong>Start</strong> to begin the countdown.<br/>Speed is set to <strong>${speedSlider.value} WPM</strong>.</div></div>`;
-    }
-    async function startCountdownThenScroll(){
-      if(running) return;
-      if(!currentText) setLevel(currentLevel);
-      // Replace Start button with running controls
-      startBtn.classList.add('hidden');
-      runControls.classList.remove('hidden');
-      // Countdown overlay inside viewport
-      placeholder.classList.remove('hidden');
-      placeholder.innerHTML = countdownMarkup(3);
-      await doCountdown(3);
-      // Prepare text and start scrolling
-      placeholder.classList.add('hidden');
-      passageEl.textContent = currentText;
-      prepareAndStartScroll();
-    }
-    function prepareAndStartScroll(){
-      // Re-enable the pause button
-      pauseBtn.disabled = false;
-      // Position scroller just below the viewport
-      const viewH = viewport.clientHeight;
-      const contentH = scroller.offsetHeight; // passage already injected
-      y = viewH; // start just below
-      scroller.style.transform = `translateY(${y}px)`;
-      const words = countWords(currentText);
-      const wpm = Number(speedSlider.value);
-      const duration = Math.max(0.5, (words / Math.max(1, wpm)) * 60); // in seconds
-      const distance = viewH + contentH; // total travel
-      pxPerSec = distance / duration;
-      scrollEndY = -contentH;
-      running = true; paused = false; lastTs = performance.now();
-      rafId = requestAnimationFrame(tick);
-    }
-    function tick(ts){
-      if(paused){ return; }
-      const dt = (ts - lastTs) / 1000; // seconds
-      lastTs = ts;
-      y -= pxPerSec * dt; // move up
-      if(y <= scrollEndY){
-        y = scrollEndY;
-        scroller.style.transform = `translateY(${y}px)`;
-        finish();
+  
+  <main class="app">
+    <div class="card">
+      <h1>📖 ReadRight</h1>
+      <div class="row" style="justify-content:space-between">
+        <div class="levels" role="group" aria-label="Choose difficulty">
+          <button class="btn level" data-level="easy">Easy</button>
+          <button class="btn level" data-level="medium">Medium</button>
+          <button class="btn level" data-level="hard">Hard</button>
+        </div>
+        <div class="slider-wrap" aria-live="polite">
+          <label for="speed" class="sr">Speed (WPM)</label>
+          <span>Speed:</span>
+          <input id="speed" type="range" min="50" max="300" value="200" step="10" />
+          <span class="badge"><span id="wpmVal">200</span> </span>
+        </div>
+      </div>
+      <div class="viewport" id="viewport" aria-live="polite" aria-atomic="true">
+        <div class="placeholder" id="placeholder">
+          <div>
+            <div style="font-weight:700; font-size:18px; margin-bottom:4px">Ready to practice?</div>
+            <div>Select a difficulty and press <em>Start</em>.</div>
+          </div>
+        </div>
+        <div class="scroller" id="scroller">
+          <div class="passage" id="passage"></div>
+        </div>
+      </div>
+      <div class="controls" id="controls">
+        <button id="startBtn" class="btn primary">Start</button>
+        <div id="runControls" class="hidden">
+          <button id="pauseBtn" class="btn btn-warning">Pause</button>
+          <button id="resetBtn" class="btn btn-outline">Reset</button>
+        </div>
+      </div>
+      <div class="sub" style="margin-top:10px">Tip: You can change the speed while it is still scrolling — it adjusts instantly!</div>
+    </div>
+  </main>
+  <script>
+    // === Passages JSON ===
+    // Expected structure in passages.json (same folder as index.html):
+    // {
+    //  "easy":   ["para 1...", "para 2..."],
+    //  "medium": ["para ..."],
+    //  "hard":   ["para ..."]
+    // }
+    const levels = document.querySelectorAll('.btn.level');
+    const speedSlider = document.getElementById('speed');
+    const wpmVal = document.getElementById('wpmVal');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const runControls = document.getElementById('runControls');
+    const viewport = document.getElementById('viewport');
+    const scroller = document.getElementById('scroller');
+    const passageEl = document.getElementById('passage');
+    const placeholder = document.getElementById('placeholder');
+    let passages = { easy:[], medium:[], hard:[] };
+    let currentLevel = null; // Changed from 'easy' to null
+    let currentText = '';
+    // Animation state
+    let rafId = null;
+    let running = false;
+    let paused = false;
+    let y = 0; // current translateY px
+    let pxPerSec = 0;
+    let scrollEndY = 0; // goal translateY
+    let lastTs = 0;
+    // Load passages.json
+    fetch('passages.json')
+      .then(r => {
+        if(!r.ok) throw new Error('Could not load passages.json');
+        return r.json();
+      })
+      .then(json => {
+        // Normalize: accept objects with {text: "..."} too
+        const norm = arr => (arr||[]).map(x => typeof x === 'string' ? x : (x && (x.text||x.passage||x.content)) || '').filter(Boolean);
+        passages.easy = norm(json.easy);
+        passages.medium = norm(json.medium);
+        passages.hard = norm(json.hard);
+        // Removed automatic call to setLevel('easy')
+      })
+      .catch(err => {
+        placeholder.innerHTML = `<div><strong style="color:#fca5a5">Error:</strong> ${err.message}.<br/>Place a <code>passages.json</code> file next to this <code>index.html</code>.</div>`;
+      });
+    // UI Handlers
+    levels.forEach(btn => btn.addEventListener('click', () => setLevel(btn.dataset.level)));
+    speedSlider.addEventListener('input', () => {
+      wpmVal.textContent = speedSlider.value;
+      if(running && !paused){
+        // Recompute speed based on new WPM
+        const wpm = Number(speedSlider.value);
+        const words = countWords(currentText);
+        const duration = Math.max(0.5, (words / Math.max(1, wpm)) * 60); // seconds
+        const distance = (viewport.clientHeight + scroller.offsetHeight);
+        pxPerSec = distance / duration;
+      }
+    });
+    startBtn.addEventListener('click', startCountdownThenScroll);
+    pauseBtn.addEventListener('click', () => {
+      if(!running) return;
+      paused = !paused;
+      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+      if(!paused){
+        lastTs = performance.now();
+        rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+      }
+    });
+    resetBtn.addEventListener('click', resetAll);
+    function setLevel(level){
+      if(running) return; // avoid switching mid-run; user can reset first
+      currentLevel = level;
+      levels.forEach(b => b.classList.toggle('active', b.dataset.level === level));
+      // Choose a random passage from the level
+      const pool = passages[level] || [];
+      currentText = pool.length ? pool[Math.floor(Math.random()*pool.length)] : '(No passages found for this level.)';
+      // Show info in placeholder; hide scroller content until Start
+      passageEl.textContent = '';
+      scroller.style.transform = 'translateY(0px)';
+      placeholder.classList.remove('hidden');
+      placeholder.innerHTML = `<div><div style="font-weight:700; font-size:18px; margin-bottom:6px">${capitalize(level)} selected</div><div>Press <strong>Start</strong> to begin the countdown.<br/>Speed is set to <strong>${speedSlider.value} WPM</strong>.</div></div>`;
+    }
+    async function startCountdownThenScroll(){
+      if(running) return;
+      // Added a check to ensure a level is selected
+      if(!currentLevel || !passages[currentLevel].length) {
+        alert("Please select a difficulty level with available passages before starting.");
         return;
       }
-      scroller.style.transform = `translateY(${y}px)`;
-      rafId = requestAnimationFrame(tick);
-    }
-    function finish(){
-      running = false; paused = false;
-      pauseBtn.textContent = 'Pause';
-      // Disable the pause button
-      pauseBtn.disabled = true;
-      // Keep runControls visible; user can press Reset to start over
-    }
-    function resetAll(){
-      cancelAnimationFrame(rafId);
-      running = false; paused = false; y = 0; pxPerSec = 0; lastTs = 0;
-      pauseBtn.textContent = 'Pause';
-      // Re-enable the pause button
-      pauseBtn.disabled = false;
-      runControls.classList.add('hidden');
-      startBtn.classList.remove('hidden');
-      // Call setLevel() to select a new passage and update the UI
-      setLevel(currentLevel);
-    }
-    // Helpers
-    function countWords(t){
-      return (t.trim().match(/\b\w+\b/g) || []).length;
-    }
-    function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-    function countdownMarkup(n){
-      return `
-        <div style="display:grid; gap:8px; place-items:center">
-          <div id="countNum" style="font-size:64px; font-weight:800">${n}</div>
-          <div style="opacity:.9">Get Ready to Read...</div>
-        </div>
-      `;
-    }
-    function doCountdown(n){
-      return new Promise(resolve => {
-        let i = n;
-        const numEl = () => document.getElementById('countNum');
-        const step = () => {
-          if(i <= 0){ resolve(); return; }
-          if(numEl()) numEl().textContent = i;
-          i--;
-          setTimeout(() => {
-            if(i === 0 && numEl()) numEl().textContent = 'Go!';
-            setTimeout(() => i>=0 && step(), 500);
-          }, 500);
-        };
-        step();
-      });
-    }
-  </script>
+      if(!currentText) setLevel(currentLevel);
+      // Replace Start button with running controls
+      startBtn.classList.add('hidden');
+      runControls.classList.remove('hidden');
+      // Countdown overlay inside viewport
+      placeholder.classList.remove('hidden');
+      placeholder.innerHTML = countdownMarkup(3);
+      await doCountdown(3);
+      // Prepare text and start scrolling
+      placeholder.classList.add('hidden');
+      passageEl.textContent = currentText;
+      prepareAndStartScroll();
+    }
+    function prepareAndStartScroll(){
+      // Re-enable the pause button
+      pauseBtn.disabled = false;
+      // Position scroller just below the viewport
+      const viewH = viewport.clientHeight;
+      const contentH = scroller.offsetHeight; // passage already injected
+      y = viewH; // start just below
+      scroller.style.transform = `translateY(${y}px)`;
+      const words = countWords(currentText);
+      const wpm = Number(speedSlider.value);
+      const duration = Math.max(0.5, (words / Math.max(1, wpm)) * 60); // in seconds
+      const distance = viewH + contentH; // total travel
+      pxPerSec = distance / duration;
+      scrollEndY = -contentH;
+      running = true; paused = false; lastTs = performance.now();
+      rafId = requestAnimationFrame(tick);
+    }
+    function tick(ts){
+      if(paused){ return; }
+      const dt = (ts - lastTs) / 1000; // seconds
+      lastTs = ts;
+      y -= pxPerSec * dt; // move up
+      if(y <= scrollEndY){
+        y = scrollEndY;
+        scroller.style.transform = `translateY(${y}px)`;
+        finish();
+        return;
+      }
+      scroller.style.transform = `translateY(${y}px)`;
+      rafId = requestAnimationFrame(tick);
+    }
+    function finish(){
+      running = false; paused = false;
+      pauseBtn.textContent = 'Pause';
+      // Disable the pause button
+      pauseBtn.disabled = true;
+      // Keep runControls visible; user can press Reset to start over
+    }
+    function resetAll(){
+      cancelAnimationFrame(rafId);
+      running = false; paused = false; y = 0; pxPerSec = 0; lastTs = 0;
+      pauseBtn.textContent = 'Pause';
+      // Re-enable the pause button
+      pauseBtn.disabled = false;
+      runControls.classList.add('hidden');
+      startBtn.classList.remove('hidden');
+      // Call setLevel() to select a new passage and update the UI
+      setLevel(currentLevel);
+    }
+    // Helpers
+    function countWords(t){
+      return (t.trim().match(/\b\w+\b/g) || []).length;
+    }
+    function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+    function countdownMarkup(n){
+      return `
+        <div style="display:grid; gap:8px; place-items:center">
+          <div id="countNum" style="font-size:64px; font-weight:800">${n}</div>
+          <div style="opacity:.9">Get Ready to Read...</div>
+        </div>
+      `;
+    }
+    function doCountdown(n){
+      return new Promise(resolve => {
+        let i = n;
+        const numEl = () => document.getElementById('countNum');
+        const step = () => {
+          if(i <= 0){ resolve(); return; }
+          if(numEl()) numEl().textContent = i;
+          i--;
+          setTimeout(() => {
+            if(i === 0 && numEl()) numEl().textContent = 'Go!';
+            setTimeout(() => i>=0 && step(), 500);
+          }, 500);
+        };
+        step();
+      });
+    }
+  </script>
 </body>
 </html>
