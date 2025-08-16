@@ -1,205 +1,93 @@
-// Await the DOMContentLoaded event to ensure all elements are available
-document.addEventListener('DOMContentLoaded', () => {
+let passages = {};
+let currentDifficulty = null;
+let scrollInterval;
+let countdownTimer;
 
-    let passages = {}; // This will hold the fetched data
-    let currentPassage = "";
-    let wordCount = 0;
-    let animationDuration = 0;
-    let isPaused = false;
-    let animation; // New variable to hold the animation object
+async function loadPassages() {
+    try {
+        const response = await fetch('passages.json');
+        passages = await response.json();
+    } catch (error) {
+        console.error('Error loading passages:', error);
+    }
+}
 
-    // Get DOM elements
-    const easyBtn = document.getElementById('easy-btn');
-    const mediumBtn = document.getElementById('medium-btn');
-    const hardBtn = document.getElementById('hard-btn');
-    const readingText = document.getElementById('reading-text');
-    const scrollContainer = document.getElementById('scroll-container'); // Get the container
-    const speedSlider = document.getElementById('speed-slider');
-    const speedValueDisplay = document.getElementById('speed-value');
-    const startBtn = document.getElementById('start-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const resumeBtn = document.getElementById('resume-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const progressBar = document.getElementById('progress-bar');
-    const countdownElement = document.getElementById('countdown');
+function setDifficulty(level) {
+    currentDifficulty = level;
+    const passage = passages[level];
+    const readingText = document.getElementById('readingText');
 
-    let intervalId;
+    if (passage) {
+        readingText.textContent = passage;
+        readingText.classList.remove('placeholder');
+    }
+}
 
-    // Fetch passages from passages.json
-    fetch('passages.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            passages = data;
-            // You can optionally pre-select a level here, e.g., selectLevel('medium');
-        })
-        .catch(error => {
-            console.error('Error fetching passages:', error);
-            readingText.textContent = 'Failed to load passages. Please check the passages.json file.';
-        });
+function startReading() {
+    if (!currentDifficulty) {
+        alert('Please select a difficulty first!');
+        return;
+    }
 
-    // Event listeners
-    easyBtn.addEventListener('click', () => {
-        selectLevel('easy');
-    });
-    mediumBtn.addEventListener('click', () => {
-        selectLevel('medium');
-    });
-    hardBtn.addEventListener('click', () => {
-        selectLevel('hard');
-    });
+    const countdownEl = document.getElementById('countdown');
+    let timeLeft = 3;
+    countdownEl.textContent = timeLeft;
+    countdownEl.style.display = 'block';
 
-    startBtn.addEventListener('click', startCountdown);
-    pauseBtn.addEventListener('click', pauseApp);
-    resumeBtn.addEventListener('click', resumeApp);
-    resetBtn.addEventListener('click', resetApp);
-    
-    speedSlider.addEventListener('input', (e) => {
-        setSpeed(e.target.value);
-    });
-
-    // Function to select a passage based on difficulty
-    function selectLevel(level) {
-        if (!passages[level] || passages[level].length === 0) {
-            readingText.textContent = `No passages found for ${level} difficulty.`;
-            return;
+    clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownEl.textContent = timeLeft;
+        } else {
+            clearInterval(countdownTimer);
+            countdownEl.style.display = 'none';
+            scrollPassage();
         }
-        
-        const selectedPassage = passages[level][Math.floor(Math.random() * passages[level].length)];
-        currentPassage = selectedPassage;
-        wordCount = currentPassage.split(' ').length;
-        readingText.textContent = currentPassage;
-        readingText.style.display = 'block';
-        // Removed the problematic resetApp() call from here
-        setSpeed(speedSlider.value); // Set the speed for the new passage
-        
-        // Highlight the selected difficulty button
-        document.querySelectorAll('.button-group button').forEach(btn => {
-            btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600', 'ring-4', 'ring-emerald-300');
-            btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
-        });
-        document.getElementById(`${level}-btn`).classList.add('active', 'bg-emerald-50', 'text-emerald-600');
-        document.getElementById(`${level}-btn`).classList.remove('hover:bg-emerald-50', 'hover:text-emerald-600');
-    }
+    }, 1000);
+}
 
-    // Function to set the reading speed
-    function setSpeed(speed) {
-        speedValueDisplay.textContent = `${speed} WPM`;
-        animationDuration = (wordCount / speed) * 60;
-    }
+function scrollPassage() {
+    const container = document.querySelector('.scroll-container');
+    const text = document.getElementById('readingText');
 
-    // Function to start the countdown
-    function startCountdown() {
-        if (!currentPassage) return;
-        let count = 3;
-        countdownElement.textContent = count;
-        countdownElement.classList.remove('hidden');
-        startBtn.classList.add('hidden');
-        pauseBtn.classList.add('hidden');
-        resumeBtn.classList.add('hidden');
-        
-        intervalId = setInterval(() => {
-            count--;
-            if (count > 0) {
-                countdownElement.textContent = count;
-            } else {
-                clearInterval(intervalId);
-                countdownElement.classList.add('hidden');
-                startScroll();
-            }
-        }, 1000);
-    }
+    // Reset any previous scroll
+    clearInterval(scrollInterval);
 
-    // Function to start the scrolling animation
-    function startScroll() {
-        // Calculate the full height of the content to be scrolled
-        const contentHeight = readingText.offsetHeight;
-        const containerHeight = scrollContainer.offsetHeight;
-        const scrollDistance = contentHeight - containerHeight;
+    // Reset styles
+    text.style.transition = 'none';
+    text.style.transform = 'translateY(0)';
 
-        // Animate the text's vertical position
-        animation = readingText.animate([
-            { transform: `translateY(0px)` },
-            { transform: `translateY(-${scrollDistance}px)` }
-        ], {
-            duration: animationDuration * 1000,
-            fill: 'forwards',
-            easing: 'linear'
-        });
+    // Force reflow
+    void text.offsetHeight;
 
-        // Start progress bar animation
-        progressBar.style.transition = `width ${animationDuration}s linear`;
-        progressBar.style.width = '100%';
-        
-        // Show pause and reset buttons, hide start button
-        startBtn.style.display = 'none';
-        pauseBtn.style.display = 'block';
-        resumeBtn.style.display = 'none';
-    }
+    // Get dimensions
+    const containerHeight = container.offsetHeight;
+    const textHeight = text.scrollHeight;
 
-    // Function to pause the app
-    function pauseApp() {
-        if (isPaused || !animation) return;
-        isPaused = true;
-        animation.pause();
-        progressBar.style.transition = 'none';
-        
-        const currentWidth = progressBar.offsetWidth;
-        const containerWidth = progressBar.parentElement.offsetWidth;
-        const remainingDuration = animationDuration * (1 - currentWidth / containerWidth);
+    // Start from bottom (passage fully below container)
+    const startY = containerHeight;
+    const endY = -textHeight;
 
-        progressBar.style.transition = `width ${remainingDuration}s linear`;
-        
-        pauseBtn.style.display = 'none';
-        resumeBtn.style.display = 'block';
-    }
+    text.style.transform = `translateY(${startY}px)`;
 
-    // Function to resume the app
-    function resumeApp() {
-        if (!isPaused || !animation) return;
-        isPaused = false;
-        animation.play();
-        
-        // Resume the progress bar animation
-        const currentWidth = progressBar.offsetWidth;
-        const containerWidth = progressBar.parentElement.offsetWidth;
-        const remainingDuration = animationDuration * (1 - currentWidth / containerWidth);
-        
-        progressBar.style.transition = `width ${remainingDuration}s linear`;
-        progressBar.style.width = '100%';
+    // Animate
+    setTimeout(() => {
+        text.style.transition = 'transform 20s linear';
+        text.style.transform = `translateY(${endY}px)`;
+    }, 100);
+}
 
-        pauseBtn.style.display = 'block';
-        resumeBtn.style.display = 'none';
-    }
+function stopReading() {
+    clearInterval(scrollInterval);
+    clearInterval(countdownTimer);
 
-    // Function to reset the app
-    function resetApp() {
-        if (animation) {
-            animation.cancel();
-            animation = null;
-        }
-        clearInterval(intervalId);
-        isPaused = false;
-        countdownElement.classList.add('hidden');
-        
-        readingText.style.transform = 'translateY(0)';
-        progressBar.style.transition = 'none';
-        progressBar.style.width = '0%';
-        
-        currentPassage = "";
-        readingText.textContent = "Select a difficulty to begin!";
-        
-        document.querySelectorAll('.button-group button').forEach(btn => {
-            btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600', 'ring-4', 'ring-emerald-300');
-            btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
-        });
+    const readingText = document.getElementById('readingText');
+    readingText.style.transition = 'none';
+    readingText.style.transform = 'translateY(0)';
 
-        startBtn.style.display = 'block';
-        pauseBtn.style.display = 'none';
-        resumeBtn.style.display = 'none';
-    }
-});
+    const countdownEl = document.getElementById('countdown');
+    countdownEl.style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', loadPassages);
