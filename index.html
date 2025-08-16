@@ -3,449 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Reading App</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>ReadRight</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #10b981;
-            --secondary-color: #4f46e5;
-            --background-color: #f0f4f8;
-            --container-bg-color: #ffffff;
-            --text-color: #1e293b;
-            --sub-text-color: #64748b;
-            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
-            box-sizing: border-box;
-            color: var(--text-color);
+            background-color: #e2e8f0; /* bg-slate-200 */
         }
-
-        .app-container {
-            width: 100%;
-            max-width: 800px;
-            min-height: 85vh;
-            background-color: var(--container-bg-color);
-            border-radius: 1.5rem;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            box-sizing: border-box;
-            gap: 1.5rem;
-        }
-
-        /* Header Section */
-        .app-header {
-            text-align: center;
-        }
-
-        .app-header h1 {
-            font-size: clamp(1.5rem, 4vw, 2.2rem);
-            font-weight: 700;
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .app-header i {
-            color: var(--secondary-color);
-            margin-right: 0.75rem;
-        }
-
-        /* Level Buttons */
-        .level-selection {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .level-btn {
-            padding: 0.6rem 1.2rem;
-            border: 2px solid var(--primary-color);
-            border-radius: 2rem;
-            font-weight: 500;
-            cursor: pointer;
-            background-color: transparent;
-            color: var(--primary-color);
-            transition: all 0.2s ease-in-out;
-        }
-
-        .level-btn.active,
-        .level-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Reading Area */
-        .reading-area {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            background-color: var(--background-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: left;
-            padding: 1.5rem;
-            box-sizing: border-box;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            color: var(--sub-text-color);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .reading-text {
-            width: 100%;
+        .container {
             max-width: 600px;
-            animation-play-state: paused;
-            position: absolute;
-            top: 100%;
+            margin: 4rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* rounded-3xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
         }
-
-        @keyframes scroll {
-            0% { transform: translateY(100%); }
-            100% { transform: translateY(-100%); }
+        .button-group button {
+            transition: all 0.2s ease;
         }
-
-        /* Controls Section */
-        .controls-container {
+        .button-group button.active {
+            box-shadow: 0 0 0 3px #6ee7b7; /* ring-4 ring-green-300 */
+        }
+        .scroll-container {
+            height: 150px; /* Increased height for better visibility */
+            overflow: hidden;
+            position: relative;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
-            margin-top: 1rem;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem; /* text-2xl */
         }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: #e2e8f0;
-            border-radius: 4px;
+        .reading-text {
+            white-space: nowrap;
+            display: inline-block;
+            transform: translateY(100%);
         }
-
         .progress-bar {
-            height: 100%;
-            width: 0;
-            background-color: var(--primary-color);
-            border-radius: 4px;
-            transition: width 0.1s linear;
+            height: 10px;
+            background-color: #34d399; /* bg-emerald-400 */
+            width: 0%;
+            border-radius: 9999px; /* rounded-full */
         }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        @keyframes scroll {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(-100%);
+            }
         }
-        
-        .control-group label {
-            font-weight: 500;
-            color: var(--sub-text-color);
+        #countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem; /* text-6xl */
+            font-weight: bold;
+            color: #10b981; /* text-emerald-600 */
+            z-index: 10;
         }
-
-        .control-group input[type="range"] {
-            -webkit-appearance: none;
-            width: 180px;
-            height: 8px;
-            background: #d1d5db;
-            border-radius: 4px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .control-group input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--secondary-color);
-            cursor: pointer;
-            border: 3px solid var(--container-bg-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .btn {
-            padding: 0.8rem 2rem;
+        .button-style {
+            padding: 0.75rem 2rem;
             font-size: 1rem;
             font-weight: 600;
-            border: none;
-            border-radius: 2rem;
+            border-radius: 9999px;
             color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+            outline: none;
         }
-
-        .btn:hover {
+        .button-style:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .btn-start { background-color: var(--primary-color); }
-        .btn-start:hover { background-color: #059669; }
-        .btn-pause { background-color: #f97316; }
-        .btn-pause:hover { background-color: #ea580c; }
-        .btn-reset { background-color: #ef4444; }
-        .btn-reset:hover { background-color: #dc2626; }
-
-        /* Countdown Overlay */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-size: 5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            z-index: 10;
-            border-radius: 1rem;
+        .orange-btn {
+            background: linear-gradient(145deg, #f97316, #ea580c);
         }
-
-        @media (max-width: 600px) {
-            .app-container {
-                padding: 1rem;
-                border-radius: 1rem;
-            }
-
-            .btn {
-                padding: 0.6rem 1.5rem;
-            }
-
-            .control-group {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+        .red-btn {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-200 antialiased">
+    <div class="container">
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-slate-800 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V5H6.5A2.5 2.5 0 0 0 4 7.5V19.5z" />
+                    <path d="M12 2v6" />
+                </svg>
+                ReadRight
+            </h1>
+            <p class="text-lg text-slate-600 mt-2">Improve your reading speed and comprehension.</p>
+        </header>
 
-<div class="app-container">
-    <header class="app-header">
-        <h1>
-            <i class="fas fa-book-open"></i> ReadRight
-        </h1>
-        <p style="color: var(--sub-text-color); margin-top: 0.5rem; font-weight: 500;">Improve your reading speed and comprehension.</p>
-    </header>
+        <section class="flex justify-center space-x-4 mb-8 button-group">
+            <button id="easy-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Easy</button>
+            <button id="medium-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Medium</button>
+            <button id="hard-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Hard</button>
+        </section>
 
-    <div class="level-selection">
-        <button class="level-btn" id="easy-btn" data-level="easy">Easy</button>
-        <button class="level-btn" id="medium-btn" data-level="medium">Medium</button>
-        <button class="level-btn" id="hard-btn" data-level="hard">Hard</button>
+        <main class="bg-slate-50 rounded-2xl p-8 mb-8 shadow-inner">
+            <div id="scroll-container" class="scroll-container">
+                <span id="reading-text" class="reading-text text-slate-700">Select a difficulty to begin!</span>
+                <div id="countdown" class="hidden">3</div>
+            </div>
+            <div class="mt-8">
+                <div class="w-full h-2 rounded-full bg-slate-300">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+        </main>
+
+        <section class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <label for="speed-slider" class="mr-4 text-slate-600">Speed:</label>
+                <input type="range" id="speed-slider" min="100" max="600" value="300" step="10" class="w-2/3">
+                <span id="speed-value" class="ml-4 text-slate-800 font-semibold">300 WPM</span>
+            </div>
+        </section>
+
+        <section class="flex justify-center space-x-6">
+            <button id="start-btn" class="button-style orange-btn">Start</button>
+            <button id="pause-btn" class="button-style orange-btn hidden">Pause</button>
+            <button id="resume-btn" class="button-style orange-btn hidden">Resume</button>
+            <button id="reset-btn" class="button-style red-btn">Reset</button>
+        </section>
     </div>
 
-    <div class="reading-area">
-        <div class="reading-text">
-            <p id="main-text">Select a difficulty level above to start.</p>
-        </div>
-        <div id="overlay" class="overlay"></div>
-    </div>
+    <script>
+        // API key should be left as empty string. The Canvas environment will handle it.
+        const apiKey = "";
+        const API_URL_TEXT_GEN = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-    <div class="controls-container">
-        <div class="progress-bar-container">
-            <div id="progress-bar" class="progress-bar"></div>
-        </div>
+        let currentPassage = "";
+        let wordCount = 0;
+        let animationDuration = 0;
+        let isPaused = false;
+
+        const passages = {
+            easy: [
+                "The quick brown fox jumps over the lazy dog.",
+                "A tiny boat sailed on the big blue sea.",
+                "The sun shines brightly in the sky today.",
+                "A soft wind blows through the green trees.",
+                "The fluffy cat slept soundly on the chair."
+            ],
+            medium: [
+                "Beneath the waning afternoon light, the old library stood like a sentinel, its towering shelves filled with the whispers of countless stories. Dust motes danced in the sunbeams, illuminating the timeless pages of forgotten lore.",
+                "A lone traveler ventured into the dense, misty forest, guided only by the faint light of a silver moon. Every rustle of leaves and snap of twigs sent a shiver down his spine, as if the ancient woods held secrets he was not meant to discover.",
+                "The bustling marketplace was a symphony of sounds and smells, a vibrant tapestry of human activity. Merchants shouted their wares, children laughed, and the aroma of exotic spices mingled with the sweet scent of fresh-baked bread.",
+                "High above the clouds, a majestic eagle soared on silent wings, surveying the world below with a keen and unblinking eye. It circled in perfect, effortless spirals, a testament to the raw, untamed freedom of the open sky.",
+                "The clock tower chimed the hour, its deep, resonant tones echoing through the quiet streets. A gentle rain began to fall, washing the cobblestones clean and casting a soft, reflective sheen upon the sleeping city.",
+            ],
+            hard: [
+                "The pervasive digitalization of modern society has fundamentally altered the landscape of human communication, necessitating a re-evaluation of our cognitive paradigms and social constructs. The confluence of ubiquitous connectivity and sophisticated algorithms presents both unprecedented opportunities for global collaboration and formidable challenges to individual privacy and intellectual autonomy.",
+                "In a nuanced analysis of postmodern literary theory, one must contend with the deconstruction of grand narratives and the inherent skepticism towards objective truth. This intellectual movement posits that meaning is not fixed but is instead a fluid construct, shaped by linguistic and cultural frameworks, thereby inviting a multiplicity of interpretations and a questioning of canonical authority.",
+                "The intricate symbiotic relationship between mycorrhizal fungi and plant roots represents a cornerstone of terrestrial ecosystem function, facilitating the efficient exchange of essential nutrients and water. This subterranean network, often unseen and undervalued, is critical for plant survival in nutrient-poor environments and plays a pivotal role in maintaining biodiversity.",
+                "Quantum entanglement, a phenomenon in which the quantum states of two or more particles are linked in such a way that they cannot be described independently of each other, defies classical intuition and challenges our conventional understanding of causality. Its implications for cryptography and computing are profound, promising a new era of secure communication and computational power.",
+                "The architectural evolution of the Roman aqueduct system exemplifies a masterful synthesis of engineering prowess and urban planning. By leveraging a sophisticated understanding of gravity and hydraulics, these structures not only supplied a burgeoning populace with a reliable source of fresh water but also served as powerful symbols of imperial ambition and civilizational advancement."
+            ]
+        };
+
+        const easyBtn = document.getElementById('easy-btn');
+        const mediumBtn = document.getElementById('medium-btn');
+        const hardBtn = document.getElementById('hard-btn');
+        const readingText = document.getElementById('reading-text');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValueDisplay = document.getElementById('speed-value');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const countdownElement = document.getElementById('countdown');
+
+        let intervalId;
+
+        easyBtn.addEventListener('click', () => {
+            selectLevel('easy');
+        });
+        mediumBtn.addEventListener('click', () => {
+            selectLevel('medium');
+        });
+        hardBtn.addEventListener('click', () => {
+            selectLevel('hard');
+        });
+
+        startBtn.addEventListener('click', startCountdown);
+        pauseBtn.addEventListener('click', pauseApp);
+        resumeBtn.addEventListener('click', resumeApp);
+        resetBtn.addEventListener('click', resetApp);
         
-        <div class="control-group">
-            <label for="speed-slider">Speed:</label>
-            <input type="range" id="speed-slider" min="50" max="300" value="150" step="10">
-            <span id="speed-value">150 WPM</span>
-        </div>
+        speedSlider.addEventListener('input', (e) => {
+            setSpeed(e.target.value);
+        });
 
-        <div class="btn-group">
-            <button id="start-btn" class="btn btn-start">Start</button>
-            <button id="pause-btn" class="btn btn-pause" style="display: none;">Pause</button>
-            <button id="reset-btn" class="btn btn-reset" style="display: none;">Reset</button>
-        </div>
-    </div>
-</div>
-
-<script>
-window.onload = function() {
-    // DOM Elements
-    const levelBtns = document.querySelectorAll('.level-btn');
-    const startBtn = document.getElementById('start-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const readingArea = document.querySelector('.reading-area');
-    const readingText = document.querySelector('.reading-text');
-    const mainTextElement = document.getElementById('main-text');
-    const speedSlider = document.getElementById('speed-slider');
-    const speedValueDisplay = document.getElementById('speed-value');
-    const progressBar = document.getElementById('progress-bar');
-    const overlay = document.getElementById('overlay');
-
-    // Global App State
-    let readingPassages = {};
-    let currentPassage = "";
-    let animationDuration = 0;
-    let isPaused = false;
-    let wordCount = 0;
-
-    // Fetch passages from passages.json
-    async function fetchPassages() {
-        try {
-            const response = await fetch('passages.json');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            readingPassages = await response.json();
-            // Default to easy level on load
-            loadPassage('easy');
-            document.getElementById('easy-btn').classList.add('active');
-        } catch (error) {
-            console.error('Failed to load passages:', error);
-            mainTextElement.textContent = "Error loading passages. Please check the 'passages.json' file is in the same directory.";
+        function selectLevel(level) {
+            const selectedPassage = passages[level][Math.floor(Math.random() * passages[level].length)];
+            currentPassage = selectedPassage;
+            wordCount = currentPassage.split(' ').length;
+            readingText.textContent = currentPassage;
+            readingText.style.display = 'inline-block';
+            resetApp(); // Reset the UI to its initial state
+            setSpeed(speedSlider.value); // Set the speed for the new passage
+            
+            // Highlight the selected difficulty button
+            document.querySelectorAll('.button-group button').forEach(btn => {
+                btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600', 'ring-4', 'ring-emerald-300');
+                btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
+            });
+            document.getElementById(`${level}-btn`).classList.add('active', 'bg-emerald-50', 'text-emerald-600');
+            document.getElementById(`${level}-btn`).classList.remove('hover:bg-emerald-50', 'hover:text-emerald-600');
         }
-    }
 
-    // Set a new passage and calculate animation duration
-    function loadPassage(level) {
-        // Stop any current animation
-        resetApp();
-
-        const passages = readingPassages[level];
-        if (passages && passages.length > 0) {
-            const randomIndex = Math.floor(Math.random() * passages.length);
-            currentPassage = passages[randomIndex];
-            wordCount = currentPassage.trim().split(/\s+/).length;
-            mainTextElement.textContent = currentPassage;
-
-            // Update UI for the new passage
-            speedSlider.dispatchEvent(new Event('input')); // Recalculate duration
+        function setSpeed(speed) {
+            speedValueDisplay.textContent = `${speed} WPM`;
+            animationDuration = (wordCount / speed) * 60;
         }
-    }
 
-    // Adjust animation duration based on WPM
-    function setSpeed(wpm) {
-        if (!currentPassage) return;
-        animationDuration = (wordCount / wpm) * 60; // Duration in seconds
-        readingText.style.animationDuration = `${animationDuration}s`;
-    }
+        function startCountdown() {
+            if (!currentPassage) return;
+            let count = 3;
+            countdownElement.textContent = count;
+            countdownElement.classList.remove('hidden');
+            startBtn.classList.add('hidden');
+            pauseBtn.classList.add('hidden');
+            resumeBtn.classList.add('hidden');
+            
+            intervalId = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownElement.textContent = count;
+                } else {
+                    clearInterval(intervalId);
+                    countdownElement.classList.add('hidden');
+                    startScroll();
+                }
+            }, 1000);
+        }
 
-    // Show countdown and start the app
-    function showCountdownAndStart() {
-        if (!currentPassage) return;
-
-        overlay.style.display = 'flex';
-        let count = 3;
-        overlay.innerHTML = `<span>${count}</span><p style="font-size: 1.5rem; font-weight: 500;">Get Ready...</p>`;
-        
-        const countdownInterval = setInterval(() => {
-            count--;
-            if (count > 0) {
-                overlay.querySelector('span').textContent = count;
-            } else {
-                clearInterval(countdownInterval);
-                overlay.style.display = 'none';
-                startScroll();
-            }
-        }, 1000);
-    }
-    
-    // Start the scrolling animation
-    function startScroll() {
-        readingText.style.animationName = 'scroll';
-        readingText.style.animationTimingFunction = 'linear';
-        readingText.style.animationFillMode = 'forwards';
-        readingText.style.animationPlayState = 'running';
-
-        startBtn.style.display = 'none';
-        pauseBtn.style.display = 'block';
-        resetBtn.style.display = 'block';
-        
-        progressBar.style.transition = `width ${animationDuration}s linear`;
-        progressBar.style.width = '100%';
-    }
-
-    // Pause/Resume the animation
-    function togglePause() {
-        if (!isPaused) {
-            readingText.style.animationPlayState = 'paused';
-            progressBar.style.animationPlayState = 'paused';
-            pauseBtn.textContent = 'Resume';
-            isPaused = true;
-            // Stop the progress bar transition
-            const computedWidth = window.getComputedStyle(progressBar).width;
-            progressBar.style.width = computedWidth;
-            progressBar.style.transition = 'none';
-        } else {
+        function startScroll() {
+            // Immediately start the animation
+            readingText.style.animationName = 'scroll';
+            readingText.style.animationTimingFunction = 'linear';
+            readingText.style.animationFillMode = 'forwards';
             readingText.style.animationPlayState = 'running';
-            pauseBtn.textContent = 'Pause';
+            readingText.style.animationDuration = `${animationDuration}s`;
+
+            // Start progress bar animation
+            progressBar.style.transition = `width ${animationDuration}s linear`;
+            progressBar.style.width = '100%';
+            
+            // Show pause and reset buttons, hide start button
+            startBtn.style.display = 'none';
+            pauseBtn.style.display = 'block';
+            resumeBtn.style.display = 'none';
+        }
+
+        function pauseApp() {
+            if (isPaused) return;
+            isPaused = true;
+            readingText.style.animationPlayState = 'paused';
+            progressBar.style.transition = 'none';
+            
+            const currentWidth = progressBar.offsetWidth;
+            const containerWidth = progressBar.parentElement.offsetWidth;
+            const remainingDuration = animationDuration * (1 - currentWidth / containerWidth);
+
+            progressBar.style.transition = `width ${remainingDuration}s linear`;
+            
+            pauseBtn.style.display = 'none';
+            resumeBtn.style.display = 'block';
+        }
+
+        function resumeApp() {
+            if (!isPaused) return;
             isPaused = false;
-            // Resume the progress bar transition from its current width
-            const currentWidth = parseFloat(window.getComputedStyle(progressBar).width);
-            const totalWidth = parseFloat(window.getComputedStyle(progressBar.parentNode).width);
-            const remainingDuration = (1 - (currentWidth / totalWidth)) * animationDuration;
+            readingText.style.animationPlayState = 'running';
+            
+            // Resume the progress bar animation
+            const currentWidth = progressBar.offsetWidth;
+            const containerWidth = progressBar.parentElement.offsetWidth;
+            const remainingDuration = animationDuration * (1 - currentWidth / containerWidth);
             
             progressBar.style.transition = `width ${remainingDuration}s linear`;
-            // Force reflow before applying new width
-            void progressBar.offsetWidth;
             progressBar.style.width = '100%';
+
+            pauseBtn.style.display = 'block';
+            resumeBtn.style.display = 'none';
         }
-    }
 
-    // Reset the app to its initial state
-    function resetApp() {
-        readingText.style.animation = 'none';
-        readingText.style.transform = 'translateY(100%)';
-        mainTextElement.textContent = currentPassage || "Select a difficulty level above to start.";
-        startBtn.style.display = 'block';
-        pauseBtn.style.display = 'none';
-        resetBtn.style.display = 'none';
-        pauseBtn.textContent = 'Pause';
-        progressBar.style.transition = 'none';
-        progressBar.style.width = '0%';
-        isPaused = false;
-    }
-
-    // Event Listeners
-    levelBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            levelBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            loadPassage(btn.dataset.level);
-        });
-    });
-
-    startBtn.addEventListener('click', showCountdownAndStart);
-    pauseBtn.addEventListener('click', togglePause);
-    resetBtn.addEventListener('click', resetApp);
-
-    speedSlider.addEventListener('input', (event) => {
-        const newSpeed = event.target.value;
-        speedValueDisplay.textContent = `${newSpeed} WPM`;
-        setSpeed(newSpeed);
-    });
-
-    // Initial load
-    fetchPassages();
-};
-</script>
-
+        function resetApp() {
+            clearInterval(intervalId);
+            isPaused = false;
+            countdownElement.classList.add('hidden');
+            
+            readingText.style.animation = 'none';
+            readingText.style.transform = 'translateY(100%)';
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0%';
+            
+            // Hide pause/resume buttons and show start button
+            startBtn.style.display = 'block';
+            pauseBtn.style.display = 'none';
+            resumeBtn.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
