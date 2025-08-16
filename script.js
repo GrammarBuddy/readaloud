@@ -178,31 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to reset the app
     function resetApp() {
-        if (animation) {
-            animation.cancel();
-            animation = null;
-        }
-        clearInterval(intervalId);
-        isPaused = false;
-        countdownElement.classList.add('hidden');
-        
-        readingText.style.transform = 'translateY(0)';
-        progressBar.style.transition = 'none';
-        progressBar.style.width = '0%';
-        
-        // ** NEW CODE STARTS HERE **
-        currentPassage = ""; // Clear the current passage
-        readingText.textContent = "Select a difficulty to begin!"; // Reset the text content
-        
-        // Deselect all difficulty buttons
-        document.querySelectorAll('.button-group button').forEach(btn => {
-            btn.classList.remove('active', 'bg-emerald-50', 'text-emerald-600');
-            btn.classList.add('hover:bg-emerald-50', 'hover:text-emerald-600');
-        });
-
-        // Hide pause/resume buttons and show start button
-        startBtn.style.display = 'block';
-        pauseBtn.style.display = 'none';
-        resumeBtn.style.display = 'none';
+        // Simply reload the page to reset all state
+        window.location.reload();
     }
 });
