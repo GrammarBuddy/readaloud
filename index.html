@@ -3,36 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Reading App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ReadRight</title>
+    <!-- Use Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Add custom CSS for the scrolling animation and font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .scrolling-container {
+            height: 100%; /* Take full height of its parent */
+            overflow: hidden; /* Hide anything outside the container */
+            position: relative;
+        }
+
+        /* Define the scrolling keyframes */
+        @keyframes scroll-up {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(-100%);
+            }
+        }
+
+        .scrolling-text {
+            /* Initially hidden at the bottom */
+            position: absolute;
+            bottom: -100%;
+            width: 100%;
+            /* Apply the animation when the 'start-scrolling' class is added */
+        }
+        
+        .start-scrolling {
+            animation-name: scroll-up;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+
+        /* Pause the animation */
+        .scrolling-paused {
+            animation-play-state: paused;
+        }
+
+        /* This container is for the buttons and has a glassmorphism effect */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Custom style for the slider to look sleek */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4A90E2;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4A90E2;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>English Reading App</h1>
-        <p id="instruction">Select a difficulty to begin!</p>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col items-center justify-center p-4">
 
-        <div class="controls">
-            <button onclick="setDifficulty('easy')">Easy</button>
-            <button onclick="setDifficulty('medium')">Medium</button>
-            <button onclick="setDifficulty('hard')">Hard</button>
+    <!-- Main container for the app -->
+    <div class="w-full max-w-4xl bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-10 flex flex-col items-center">
+        
+        <!-- Header with app title -->
+        <h1 class="text-3xl md:text-5xl font-bold text-center mb-8 text-blue-400">ReadRight</h1>
+
+        <!-- Difficulty Selection Buttons -->
+        <div id="difficulty-buttons" class="flex flex-wrap justify-center gap-4 mb-8 w-full">
+            <button id="easy-btn" class="difficulty-btn px-6 py-3 rounded-full text-lg font-semibold transition-transform duration-200 hover:scale-105 shadow-md bg-green-500 text-white hover:bg-green-600">Easy</button>
+            <button id="medium-btn" class="difficulty-btn px-6 py-3 rounded-full text-lg font-semibold transition-transform duration-200 hover:scale-105 shadow-md bg-yellow-500 text-gray-900 hover:bg-yellow-600">Medium</button>
+            <button id="hard-btn" class="difficulty-btn px-6 py-3 rounded-full text-lg font-semibold transition-transform duration-200 hover:scale-105 shadow-md bg-red-500 text-white hover:bg-red-600">Hard</button>
         </div>
 
-        <div class="controls">
-            <label for="speedSlider">Scroll Speed:</label>
-            <input type="range" id="speedSlider" min="1" max="10" value="5">
+        <!-- Display area for Countdown & Status -->
+        <div id="countdown-display" class="w-full text-center mb-6">
+            <p id="countdown-text" class="text-6xl md:text-8xl font-extrabold text-blue-400 transition-opacity duration-300 opacity-0">3</p>
+            <p id="status-text" class="text-xl md:text-2xl mt-2 text-gray-400">Select a difficulty to begin.</p>
+        </div>
+        
+        <!-- Main viewing area for the scrolling text -->
+        <div id="passage-view" class="scrolling-container w-full h-96 md:h-[500px] border-4 border-blue-400 rounded-xl overflow-hidden shadow-inner bg-gray-900 mb-6 relative">
+            <div id="scrolling-passage" class="scrolling-text text-xl md:text-2xl font-light leading-relaxed p-4 whitespace-pre-wrap"></div>
+        </div>
+        
+        <!-- Controls: Slider and Buttons -->
+        <div class="w-full max-w-md flex flex-col items-center">
+            
+            <!-- Speed Slider -->
+            <div class="w-full mb-6">
+                <label for="speed-slider" class="block text-center mb-2 font-medium">Reading Speed: <span id="wpm-value">100</span> WPM</label>
+                <input type="range" id="speed-slider" min="50" max="300" value="100" step="10" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="control-buttons" class="flex justify-center gap-4 w-full">
+                <button id="start-btn" class="px-8 py-4 rounded-full text-xl font-bold transition-transform duration-200 hover:scale-105 shadow-lg bg-blue-500 text-white hover:bg-blue-600">Start</button>
+                
+                <!-- These buttons are initially hidden -->
+                <button id="pause-btn" class="hidden px-8 py-4 rounded-full text-xl font-bold transition-transform duration-200 hover:scale-105 shadow-lg bg-yellow-500 text-gray-900 hover:bg-yellow-600">Pause</button>
+                <button id="reset-btn" class="hidden px-8 py-4 rounded-full text-xl font-bold transition-transform duration-200 hover:scale-105 shadow-lg bg-red-500 text-white hover:bg-red-600">Reset</button>
+            </div>
         </div>
 
-        <div class="controls">
-            <button id="startButton">Start</button>
-            <button id="stopButton">Stop</button>
-        </div>
-
-        <div id="countdown"></div>
-        <div id="passageContainer">
-            <div id="passage"></div>
-        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // === Data ===
+        // Since we can't load a separate file, the JSON data is hardcoded here.
+        const passages = {
+            easy: [
+                "The cat sat on the mat. It was a sunny day. The cat's name was Fluffy. Fluffy liked to play with a red ball. A small bird sang in a tree outside the window. Fluffy watched the bird with big, green eyes.",
+                "I like to eat apples. Apples are red and green. My friend also likes apples. We eat them in the park. The park has a big tree. We sit under the tree and talk."
+            ],
+            medium: [
+                "The old house stood on a hill overlooking the quiet town. Its windows, like dark eyes, stared out at the world. Ivy climbed the stone walls, clinging to the bricks with a strong, green grip. People said the house was haunted, but a young artist named Maya saw only its beauty. She believed it was a place filled with stories waiting to be told.",
+                "Beneath the ocean's surface, a world of vibrant color and strange shapes thrived. Schools of fish moved together like a single, silver ribbon. A lone turtle, ancient and slow, drifted past coral reefs that looked like painted forests. The sun's light filtered down, creating shimmering patterns on the sandy bottom, illuminating the silent, peaceful world below."
+            ],
+            hard: [
+                "The industrial revolution, a period of profound technological and social change, irrevocably altered the trajectory of human civilization. It was characterized by the transition from agrarian and handcraft-based economies to those dominated by machinery and factory systems. This transformation, while catalyzing unprecedented economic growth and innovation, also engendered complex socio-economic challenges, including urban overpopulation, labor exploitation, and significant environmental degradation. Historians continue to debate the long-term consequences of this monumental epoch, examining its dual legacy of progress and disparity.",
+                "In the realm of quantum mechanics, the principle of superposition dictates that a particle, such as an electron, can exist in all of its possible states simultaneously until it is measured. This counterintuitive concept, a cornerstone of quantum theory, challenges classical notions of reality. The act of observation is what forces the particle to 'collapse' into a single, definite state. This phenomenon, famously illustrated by the thought experiment of Schrödinger's cat, highlights the bizarre and probabilistic nature of the subatomic world, a realm governed by rules that defy our macroscopic intuition."
+            ]
+        };
+
+        // === DOM Elements ===
+        const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+        const wpmSlider = document.getElementById('speed-slider');
+        const wpmValueDisplay = document.getElementById('wpm-value');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const countdownText = document.getElementById('countdown-text');
+        const statusText = document.getElementById('status-text');
+        const passageView = document.getElementById('passage-view');
+        const scrollingPassage = document.getElementById('scrolling-passage');
+
+        // === State Variables ===
+        let currentDifficulty = null;
+        let currentPassage = '';
+        let countdownInterval = null;
+        let isPaused = false;
+        let animationDuration = 0; // Duration in seconds
+
+        // === Event Listeners ===
+
+        // Handle difficulty button clicks
+        difficultyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove 'active' class from all buttons and add to the clicked one
+                difficultyButtons.forEach(btn => btn.classList.remove('scale-110', 'shadow-2xl'));
+                button.classList.add('scale-110', 'shadow-2xl');
+
+                currentDifficulty = button.id.replace('-btn', '');
+                selectPassage();
+                
+                // Show the start button and reset UI
+                startBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                resetBtn.classList.add('hidden');
+                statusText.textContent = 'Press Start to begin.';
+                countdownText.classList.add('opacity-0');
+            });
+        });
+
+        // Update WPM display as slider moves
+        wpmSlider.addEventListener('input', () => {
+            wpmValueDisplay.textContent = wpmSlider.value;
+        });
+
+        // Start button logic
+        startBtn.addEventListener('click', () => {
+            if (!currentDifficulty) {
+                alert("Please select a difficulty level first!");
+                return;
+            }
+            startCountdown();
+            startBtn.classList.add('hidden');
+            statusText.textContent = 'Get Ready to Read!';
+        });
+
+        // Pause/Resume button logic
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            if (isPaused) {
+                scrollingPassage.classList.add('scrolling-paused');
+                pauseBtn.textContent = 'Resume';
+            } else {
+                scrollingPassage.classList.remove('scrolling-paused');
+                pauseBtn.textContent = 'Pause';
+            }
+        });
+
+        // Reset button logic
+        resetBtn.addEventListener('click', () => {
+            resetApp();
+        });
+
+        // === Functions ===
+
+        /**
+         * Selects a random passage based on the current difficulty.
+         */
+        function selectPassage() {
+            const passagesArray = passages[currentDifficulty];
+            const randomIndex = Math.floor(Math.random() * passagesArray.length);
+            currentPassage = passagesArray[randomIndex];
+            scrollingPassage.textContent = currentPassage;
+            resetPassageScroll();
+        }
+
+        /**
+         * Starts the 3-2-1 countdown.
+         */
+        function startCountdown() {
+            let count = 3;
+            countdownText.textContent = count;
+            countdownText.classList.remove('opacity-0');
+            
+            countdownInterval = setInterval(() => {
+                count--;
+                countdownText.textContent = count;
+                
+                if (count === 0) {
+                    clearInterval(countdownInterval);
+                    countdownText.textContent = '';
+                    statusText.textContent = '';
+                    startScrolling();
+                    
+                }
+            }, 1000);
+        }
+
+        /**
+         * Starts the text scrolling animation.
+         */
+        function startScrolling() {
+            // Un-hide the pause and reset buttons
+            pauseBtn.classList.remove('hidden');
+            resetBtn.classList.remove('hidden');
+            
+            // Calculate animation duration based on WPM
+            const wpm = parseInt(wpmSlider.value);
+            const wordCount = currentPassage.split(' ').length;
+            const durationInMinutes = wordCount / wpm;
+            animationDuration = durationInMinutes * 60; // Convert to seconds
+
+            // Set the animation duration and start the animation
+            scrollingPassage.style.animationDuration = `${animationDuration}s`;
+            scrollingPassage.classList.add('start-scrolling');
+            
+            // Listen for the end of the animation to reset the UI
+            scrollingPassage.addEventListener('animationend', () => {
+                resetApp();
+                statusText.textContent = 'Passage finished! Select a new difficulty or try again.';
+            }, { once: true });
+        }
+
+        /**
+         * Resets the application to its initial state.
+         */
+        function resetApp() {
+            // Clear any running timers
+            clearInterval(countdownInterval);
+
+            // Reset the state variables
+            isPaused = false;
+            
+            // Hide the countdown and reset status text
+            countdownText.classList.add('opacity-0');
+            countdownText.textContent = '3';
+            
+            // Stop and reset the scrolling animation
+            scrollingPassage.classList.remove('start-scrolling', 'scrolling-paused');
+            scrollingPassage.style.animationDuration = ''; // Remove the duration to reset
+            scrollingPassage.style.transform = ''; // Reset transform for quick reset
+            
+            // Reset button visibility and text
+            startBtn.classList.remove('hidden');
+            pauseBtn.classList.add('hidden');
+            pauseBtn.textContent = 'Pause';
+            resetBtn.classList.add('hidden');
+            statusText.textContent = 'Press Start to begin.';
+        }
+        
+        /**
+         * Resets the passage scroll to the bottom.
+         */
+         function resetPassageScroll() {
+            scrollingPassage.classList.remove('start-scrolling', 'scrolling-paused');
+            scrollingPassage.style.animationDuration = '';
+            scrollingPassage.style.transform = '';
+            // A brief timeout is needed to ensure the DOM has time to reset the animation before it starts again.
+            setTimeout(() => {
+                scrollingPassage.classList.add('start-scrolling');
+                scrollingPassage.classList.remove('start-scrolling');
+            }, 50);
+        }
+
+        // Initialize the app state
+        selectPassage();
+
+    </script>
 </body>
 </html>
