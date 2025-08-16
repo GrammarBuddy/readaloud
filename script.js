@@ -6,12 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let wordCount = 0;
     let animationDuration = 0;
     let isPaused = false;
+    let animation; // New variable to hold the animation object
 
     // Get DOM elements
     const easyBtn = document.getElementById('easy-btn');
     const mediumBtn = document.getElementById('medium-btn');
     const hardBtn = document.getElementById('hard-btn');
     const readingText = document.getElementById('reading-text');
+    const scrollContainer = document.getElementById('scroll-container'); // Get the container
     const speedSlider = document.getElementById('speed-slider');
     const speedValueDisplay = document.getElementById('speed-value');
     const startBtn = document.getElementById('start-btn');
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPassage = selectedPassage;
         wordCount = currentPassage.split(' ').length;
         readingText.textContent = currentPassage;
-        readingText.style.display = 'inline-block';
+        readingText.style.display = 'block';
         resetApp(); // Reset the UI to its initial state
         setSpeed(speedSlider.value); // Set the speed for the new passage
         
@@ -114,12 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to start the scrolling animation
     function startScroll() {
-        // Immediately start the animation
-        readingText.style.animationName = 'scroll';
-        readingText.style.animationTimingFunction = 'linear';
-        readingText.style.animationFillMode = 'forwards';
-        readingText.style.animationPlayState = 'running';
-        readingText.style.animationDuration = `${animationDuration}s`;
+        // Calculate the full height of the content to be scrolled
+        const contentHeight = readingText.offsetHeight;
+        const containerHeight = scrollContainer.offsetHeight;
+        const scrollDistance = contentHeight - containerHeight;
+
+        // Animate the text's vertical position
+        animation = readingText.animate([
+            { transform: `translateY(0px)` },
+            { transform: `translateY(-${scrollDistance}px)` }
+        ], {
+            duration: animationDuration * 1000,
+            fill: 'forwards',
+            easing: 'linear'
+        });
 
         // Start progress bar animation
         progressBar.style.transition = `width ${animationDuration}s linear`;
@@ -133,9 +143,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to pause the app
     function pauseApp() {
-        if (isPaused) return;
+        if (isPaused || !animation) return;
         isPaused = true;
-        readingText.style.animationPlayState = 'paused';
+        animation.pause();
         progressBar.style.transition = 'none';
         
         const currentWidth = progressBar.offsetWidth;
@@ -150,9 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to resume the app
     function resumeApp() {
-        if (!isPaused) return;
+        if (!isPaused || !animation) return;
         isPaused = false;
-        readingText.style.animationPlayState = 'running';
+        animation.play();
         
         // Resume the progress bar animation
         const currentWidth = progressBar.offsetWidth;
@@ -168,12 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to reset the app
     function resetApp() {
+        if (animation) {
+            animation.cancel();
+            animation = null;
+        }
         clearInterval(intervalId);
         isPaused = false;
         countdownElement.classList.add('hidden');
         
-        readingText.style.animation = 'none';
-        readingText.style.transform = 'translateY(100%)';
+        readingText.style.transform = 'translateY(0)';
         progressBar.style.transition = 'none';
         progressBar.style.width = '0%';
         
