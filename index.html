@@ -3,56 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReadRight</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>English Reading App</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-200 antialiased">
+<body>
     <div class="container">
-        <header class="text-center mb-6">
-            <h1 class="text-4xl font-extrabold text-slate-800 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-emerald-500 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V5H6.5A2.5 2.5 0 0 0 4 7.5V19.5z" />
-                    <path d="M12 2v6" />
-                </svg>
-                ReadRight
-            </h1>
-            <p class="text-lg text-slate-600 mt-2">Improve your reading speed and comprehension.</p>
-        </header>
+        <h1>English Reading App</h1>
+        <p id="instruction">Select a difficulty to begin!</p>
 
-        <section class="flex justify-center space-x-4 mb-8 button-group">
-            <button id="easy-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Easy</button>
-            <button id="medium-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Medium</button>
-            <button id="hard-btn" class="px-6 py-2 rounded-full border border-emerald-500 text-emerald-500 font-semibold hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-300">Hard</button>
-        </section>
+        <div class="controls">
+            <button onclick="setDifficulty('easy')">Easy</button>
+            <button onclick="setDifficulty('medium')">Medium</button>
+            <button onclick="setDifficulty('hard')">Hard</button>
+        </div>
 
-        <main class="bg-slate-50 rounded-2xl p-8 mb-8 shadow-inner">
-            <div id="scroll-container" class="scroll-container">
-                <span id="reading-text" class="reading-text text-slate-700">Select a difficulty to begin!</span>
-                <div id="countdown" class="hidden">3</div>
-            </div>
-            <div class="mt-8">
-                <div class="w-full h-2 rounded-full bg-slate-300">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
-            </div>
-        </main>
+        <div class="controls">
+            <label for="speedSlider">Scroll Speed:</label>
+            <input type="range" id="speedSlider" min="1" max="10" value="5">
+        </div>
 
-        <section class="text-center mb-8">
-            <div class="flex items-center justify-center mb-4">
-                <label for="speed-slider" class="mr-4 text-slate-600">Speed:</label>
-                <input type="range" id="speed-slider" min="100" max="600" value="300" step="10" class="w-2/3">
-                <span id="speed-value" class="ml-4 text-slate-800 font-semibold">300 WPM</span>
-            </div>
-        </section>
+        <div class="controls">
+            <button id="startButton">Start</button>
+            <button id="stopButton">Stop</button>
+        </div>
 
-        <section class="flex justify-center space-x-6">
-            <button id="start-btn" class="button-style orange-btn">Start</button>
-            <button id="pause-btn" class="button-style orange-btn hidden">Pause</button>
-            <button id="resume-btn" class="button-style orange-btn hidden">Resume</button>
-            <button id="reset-btn" class="button-style red-btn">Reset</button>
-        </section>
+        <div id="countdown"></div>
+        <div id="passageContainer">
+            <div id="passage"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
