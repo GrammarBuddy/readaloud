@@ -8,7 +8,8 @@ body {
     padding: 2rem;
     background-color: #ffffff;
     border-radius: 1.5rem; /* rounded-3xl */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
 }
 .button-group button {
     transition: all 0.2s ease;
@@ -25,9 +26,20 @@ body {
 .reading-text {
     white-space: normal;
     display: block; /* Ensures the paragraph wraps */
-    transform: translateY(100%);
     text-align: justify;
+    transform: translateY(0);
 }
+
+/* Center the placeholder text before a passage is chosen */
+.reading-text.placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 90%;
+}
+
 .progress-bar {
     height: 10px;
     background-color: #34d399; /* bg-emerald-400 */
