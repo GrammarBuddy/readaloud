@@ -1,99 +1,90 @@
 let passages = {};
-let currentDifficulty = null;
-let scrollInterval;
-let countdownTimer;
-let scrollDuration = 20; // default duration in seconds
+let selectedDifficulty = null;
+let scrollInterval = null;
+let countdownTimer = null;
+let currentPosition = 0;
 
 async function loadPassages() {
-    try {
-        const response = await fetch('passages.json');
-        passages = await response.json();
-    } catch (error) {
-        console.error('Error loading passages:', error);
-    }
+    const response = await fetch("passages.json");
+    passages = await response.json();
 }
 
 function setDifficulty(level) {
-    currentDifficulty = level;
-    const readingText = document.getElementById('readingText');
-
-    if (level) {
-        readingText.textContent = `${level.charAt(0).toUpperCase() + level.slice(1)} selected`;
-        readingText.classList.remove('placeholder');
-    }
+    selectedDifficulty = level;
+    document.getElementById("instruction").textContent =
+        level.charAt(0).toUpperCase() + level.slice(1) + " selected!";
 }
 
 function startReading() {
-    if (!currentDifficulty) {
-        alert('Please select a difficulty first!');
+    if (!selectedDifficulty) {
+        alert("Please select a difficulty first!");
         return;
     }
 
-    const countdownEl = document.getElementById('countdown');
-    let timeLeft = 3;
-    countdownEl.textContent = timeLeft;
-    countdownEl.style.display = 'block';
+    // Clear old passage
+    const passageDiv = document.getElementById("passage");
+    passageDiv.textContent = "";
 
-    clearInterval(countdownTimer);
+    let countdown = 3;
+    const countdownDiv = document.getElementById("countdown");
+    countdownDiv.textContent = countdown;
+
     countdownTimer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            countdownEl.textContent = timeLeft;
+        countdown--;
+        if (countdown > 0) {
+            countdownDiv.textContent = countdown;
         } else {
             clearInterval(countdownTimer);
-            countdownEl.style.display = 'none';
-            showAndScrollPassage();
+            countdownDiv.textContent = "";
+            showPassage();
+            startScrolling();
         }
     }, 1000);
 }
 
-function showAndScrollPassage() {
-    const container = document.querySelector('.scroll-container');
-    const text = document.getElementById('readingText');
+function showPassage() {
+    const passageDiv = document.getElementById("passage");
+    passageDiv.textContent = passages[selectedDifficulty];
+    const container = document.getElementById("passageContainer");
 
-    // Get the actual passage
-    const passage = passages[currentDifficulty];
-    text.textContent = passage;
+    // Start passage at bottom of container
+    currentPosition = container.clientHeight;
+    passageDiv.style.top = currentPosition + "px";
+}
 
-    // Reset any previous scroll
-    clearInterval(scrollInterval);
-    text.style.transition = 'none';
-    text.style.transform = 'translateY(0)';
+function startScrolling() {
+    const passageDiv = document.getElementById("passage");
+    const container = document.getElementById("passageContainer");
+    const speed = parseInt(document.getElementById("speedSlider").value, 10);
 
-    // Force reflow
-    void text.offsetHeight;
+    if (scrollInterval) clearInterval(scrollInterval);
 
-    // Get dimensions
-    const containerHeight = container.offsetHeight;
-    const textHeight = text.scrollHeight;
+    scrollInterval = setInterval(() => {
+        currentPosition -= 1; // move upward
+        passageDiv.style.top = currentPosition + "px";
 
-    // Start from bottom
-    const startY = containerHeight;
-    const endY = -textHeight;
-
-    text.style.transform = `translateY(${startY}px)`;
-
-    // Get scroll speed from slider (seconds)
-    const speedSlider = document.getElementById('speedSlider');
-    scrollDuration = speedSlider ? parseInt(speedSlider.value, 10) : 20;
-
-    // Animate
-    setTimeout(() => {
-        text.style.transition = `transform ${scrollDuration}s linear`;
-        text.style.transform = `translateY(${endY}px)`;
-    }, 100);
+        // stop when completely scrolled past top
+        if (currentPosition + passageDiv.clientHeight < 0) {
+            clearInterval(scrollInterval);
+        }
+    }, 200 / speed); // speed control
 }
 
 function stopReading() {
-    clearInterval(scrollInterval);
-    clearInterval(countdownTimer);
-
-    const readingText = document.getElementById('readingText');
-    readingText.style.transition = 'none';
-    readingText.style.transform = 'translateY(0)';
-
-    const countdownEl = document.getElementById('countdown');
-    countdownEl.style.display = 'none';
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+    }
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
 }
 
-document.addEventListener('DOMContentLoaded', loadPassages);
+document.addEventListener("DOMContentLoaded", () => {
+    loadPassages();
+
+    // Hook buttons
+    document.getElementById("startButton").addEventListener("click", startReading);
+    document.getElementById("stopButton").addEventListener("click", stopReading);
+});
