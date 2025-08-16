@@ -20,16 +20,16 @@ body {
     height: 150px; /* Increased height for better visibility */
     overflow: hidden;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* Removed flexbox properties here */
     text-align: center;
     font-size: 1.5rem; /* text-2xl */
 }
 .reading-text {
-    white-space: nowrap;
+    /* Changed white-space to allow wrapping */
+    white-space: normal;
     display: inline-block;
     transform: translateY(100%);
+    text-align: justify;
 }
 .progress-bar {
     height: 10px;
