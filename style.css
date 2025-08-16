@@ -20,14 +20,11 @@ body {
     height: 150px; /* Increased height for better visibility */
     overflow: hidden;
     position: relative;
-    /* Removed flexbox properties here */
-    text-align: center;
     font-size: 1.5rem; /* text-2xl */
 }
 .reading-text {
-    /* Changed white-space to allow wrapping */
     white-space: normal;
-    display: inline-block;
+    display: block; /* Changed to block for proper wrapping */
     transform: translateY(100%);
     text-align: justify;
 }
