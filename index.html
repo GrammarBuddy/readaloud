@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ReadRight</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
+   
     <style>
       :root{
         --bg:#0f172a;       /* slate-900 */
@@ -125,10 +126,10 @@
           <span class="badge"><span id="wpmVal">200</span> </span>
         </div>
         <div class="slider-wrap" aria-live="polite">
-          <label for="fontSize" class="sr">Font (px)</label>
-          <span>Font:</span>
+          <label for="fontSize" class="sr">Font Size (px)</label>
+          <span>Font Size:</span>
           <input id="fontSize" type="range" min="12" max="30" value="18" step="1" />
-          <span class="badge"><span id="fontVal">18</span></span>
+          <span class="badge"><span id="fontVal">18</span> px</span>
         </div>
       </div>
       <div class="viewport" id="viewport" aria-live="polite" aria-atomic="true">
@@ -245,7 +246,7 @@
       passageEl.style.fontSize = `${fontSizeSlider.value}px`;
       scroller.style.transform = 'translateY(0px)';
       placeholder.classList.remove('hidden');
-      placeholder.innerHTML = `<div><div style="font-weight:700; font-size:18px; margin-bottom:6px">${capitalize(level)} selected</div><div>Press <strong>Start</strong> to begin the countdown.<br/>Speed is set to <strong>${speedSlider.value} WPM</strong>.</div></div>`;
+      placeholder.innerHTML = `<div><div style="font-weight:700; font-size:18px; margin-bottom:6px">${capitalize(level)} selected</div><div>Press <strong>Start</strong> to begin the countdown.<br/>Speed is set to <strong>${speedSlider.value} WPM</strong>.<br/>Font size is set to <strong>${fontSizeSlider.value} px</strong>.</div></div>`;
     }
     async function startCountdownThenScroll(){
       if(running) return;
